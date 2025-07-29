@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   حاسبة القطية - النظام الشهري
+  </title>
+  <!-- PWA Meta Tags -->
+  <meta content="#4facfe" name="theme-color"/>
+  <meta content="تطبيق حاسبة القطية الشهرية لإدارة المصروفات مع الأصدقاء" name="description"/>
+  <meta content="yes" name="apple-mobile-web-app-capable"/>
+  <meta content="default" name="apple-mobile-web-app-status-bar-style"/>
+  <meta content="حاسبة القطية" name="apple-mobile-web-app-title"/>
+  <meta content="yes" name="mobile-web-app-capable"/>
+  <!-- Icons -->
+  <link href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/354/money-bag_1f4b0.png" rel="icon" sizes="192x192" type="image/png"/>
+  <link href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/354/money-bag_1f4b0.png" rel="apple-touch-icon"/>
+  <!-- Web App Manifest -->
+  <style>
+   * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            overscroll-behavior: none;
+        }
+
+        /* PWA Styles */
+        .pwa-install-prompt {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            display: none;
+            animation: bounce 2s infinite;
+        }
+
+        .pwa-install-prompt:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .current-month {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        input[type="number"], input[type="text"], input[type="date"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        input[type="number"]:focus, input[type="text"]:focus, input[type="date"]:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .remove-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            padding: 8px 12px;
+            font-size: 14px;
+            min-width: auto;
+        }
+
+        .person-item, .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .person-item:hover, .expense-item:hover {
+            background: #f1f3f4;
+            transform: translateX(-5px);
+        }
+
+        .date-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-right: 10px;
+        }
+
+        .summary {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .summary h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .summary-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-item h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .summary-item .amount {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .history-section {
+            margin-top: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .month-toggle {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .month-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.4);
+        }
+
+        .month-details {
+            display: none;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 2px solid #dee2e6;
+        }
+
+        .month-details.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .icon {
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .input-group input, .input-group button {
+                margin-bottom: 10px;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+  </style>
+  <link href="manifest.json" rel="manifest"/>
+ </head>
+ <body>
+  <div class="container">
+   <div class="header">
+    <h1>
+     💰 حاسبة القطية - النظام الشهري
+    </h1>
+    <p>
+     احسب المصروفات مع الشباب بنظام شهري
+    </p>
+   </div>
+   <div class="current-month" id="currentMonthDisplay">
+    الشهر الحالي: يناير 2025
+   </div>
+   <div class="content">
+    <!-- مبلغ القطية -->
+    <div class="section">
+     <h2>
+      <span class="icon">
+       💵
+      </span>
+      مبلغ القطية للشخص الواحد
+     </h2>
+     <div class="input-group">
+      <input id="contribution" min="0" placeholder="مثال: 50" step="0.01" type="number"/>
+      <span>
+       دينار
+      </span>
+     </div>
+    </div>
+    <!-- إضافة الأشخاص -->
+    <div class="section">
+     <h2>
+      <span class="icon">
+       👥
+      </span>
+      الأشخاص ومساهماتهم
+     </h2>
+     <div class="input-group">
+      <input id="personName" placeholder="اسم الشخص" type="text"/>
+      <input id="contributionDate" type="date"/>
+      <button onclick="addPerson()">
+       إضافة
+      </button>
+     </div>
+     <div id="personsList">
+     </div>
+    </div>
+    <!-- إضافة المصروفات -->
+    <div class="section">
+     <h2>
+      <span class="icon">
+       🧾
+      </span>
+      المصروفات الشهرية
+     </h2>
+     <div class="input-group">
+      <input id="expenseName" placeholder="وصف المصروف" type="text"/>
+      <input id="expenseAmount" min="0" placeholder="المبلغ" step="0.01" type="number"/>
+      <input id="expenseDate" type="date"/>
+      <button onclick="addExpense()">
+       إضافة
+      </button>
+     </div>
+     <div id="expensesList">
+     </div>
+    </div>
+    <!-- الملخص -->
+    <div class="summary">
+     <h2>
+      📊 ملخص الشهر الحالي
+     </h2>
+     <div class="summary-grid">
+      <div class="summary-item">
+       <h3>
+        إجمالي القطية
+       </h3>
+       <div class="amount" id="totalContribution">
+        0.000 د.ك
+       </div>
+      </div>
+      <div class="summary-item">
+       <h3>
+        إجمالي المصروفات
+       </h3>
+       <div class="amount" id="totalExpenses">
+        0.000 د.ك
+       </div>
+      </div>
+      <div class="summary-item">
+       <h3>
+        المتبقي
+       </h3>
+       <div class="amount" id="remaining">
+        0.000 د.ك
+       </div>
+      </div>
+      <div class="summary-item">
+       <h3>
+        باقي من الشهر السابق
+       </h3>
+       <div class="amount" id="previousBalance">
+        0.000 د.ك
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- سجل الأشهر السابقة -->
+    <div class="history-section">
+     <h2>
+      <span class="icon">
+       📅
+      </span>
+      سجل الأشهر السابقة
+     </h2>
+     <div id="monthsHistory">
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+   let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let monthsData = {};
+        let previousMonthBalance = 0;
+
+        const monthNames = [
+            'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+            'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+        ];
+
+        function getCurrentMonthKey() {
+            return `${currentYear}-${currentMonth}`;
+        }
+
+        function initializeMonth() {
+            const monthKey = getCurrentMonthKey();
+            console.log('Initializing month:', monthKey); // للتشخيص
+            
+            if (!monthsData[monthKey]) {
+                monthsData[monthKey] = {
+                    persons: [],
+                    expenses: [],
+                    monthName: `${monthNames[currentMonth]} ${currentYear}`,
+                    previousBalance: previousMonthBalance
+                };
+                console.log('Month initialized:', monthsData[monthKey]); // للتشخيص
+            }
+            updateCurrentMonthDisplay();
+        }
+
+        function updateCurrentMonthDisplay() {
+            document.getElementById('currentMonthDisplay').textContent = 
+                `الشهر الحالي: ${monthNames[currentMonth]} ${currentYear}`;
+        }
+
+        function checkMonthTransition() {
+            const today = new Date();
+            const day = today.getDate();
+            
+            // إذا كان اليوم 23 أو بعده، وانتهى الشهر
+            if (day >= 23) {
+                const nextMonth = new Date(currentYear, currentMonth + 1, 1);
+                if (today >= nextMonth) {
+                    // حفظ الباقي من الشهر الحالي
+                    const currentMonthKey = getCurrentMonthKey();
+                    const currentData = monthsData[currentMonthKey];
+                    if (currentData) {
+                        const totalContrib = getCurrentMonthContribution();
+                        const totalExp = getCurrentMonthExpenses();
+                        previousMonthBalance = totalContrib - totalExp + (currentData.previousBalance || 0);
+                    }
+                    
+                    // الانتقال للشهر الجديد
+                    if (currentMonth === 11) {
+                        currentMonth = 0;
+                        currentYear++;
+                    } else {
+                        currentMonth++;
+                    }
+                    
+                    initializeMonth();
+                    updateDisplay();
+                }
+            }
+        }
+
+        function addPerson() {
+            const nameInput = document.getElementById('personName');
+            const dateInput = document.getElementById('contributionDate');
+            const name = nameInput.value.trim();
+            const date = dateInput.value;
+            
+            console.log('Adding person:', name, date); // للتشخيص
+            
+            if (name && date) {
+                const monthKey = getCurrentMonthKey();
+                console.log('Month key:', monthKey); // للتشخيص
+                console.log('Current monthsData:', monthsData); // للتشخيص
+                
+                // تأكد من وجود البيانات للشهر الحالي
+                if (!monthsData[monthKey]) {
+                    initializeMonth();
+                }
+                
+                if (!monthsData[monthKey].persons.find(p => p.name === name)) {
+                    monthsData[monthKey].persons.push({ name, date });
+                    nameInput.value = '';
+                    dateInput.value = new Date().toISOString().split('T')[0];
+                    updateDisplay();
+                    autoSave();
+                    console.log('Person added successfully'); // للتشخيص
+                } else {
+                    alert('هذا الاسم موجود مسبقاً في هذا الشهر!');
+                }
+            } else {
+                alert('يرجى إدخال الاسم والتاريخ');
+            }
+        }
+
+        function removePerson(index) {
+            const monthKey = getCurrentMonthKey();
+            monthsData[monthKey].persons.splice(index, 1);
+            updateDisplay();
+            autoSave();
+        }
+
+        function addExpense() {
+            const nameInput = document.getElementById('expenseName');
+            const amountInput = document.getElementById('expenseAmount');
+            const dateInput = document.getElementById('expenseDate');
+            const name = nameInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+            const date = dateInput.value;
+            
+            if (name && amount > 0 && date) {
+                const monthKey = getCurrentMonthKey();
+                monthsData[monthKey].expenses.push({ name, amount, date });
+                nameInput.value = '';
+                amountInput.value = '';
+                dateInput.value = new Date().toISOString().split('T')[0];
+                updateDisplay();
+                autoSave();
+            } else {
+                alert('يرجى إدخال جميع البيانات بشكل صحيح');
+            }
+        }
+
+        function removeExpense(index) {
+            const monthKey = getCurrentMonthKey();
+            monthsData[monthKey].expenses.splice(index, 1);
+            updateDisplay();
+            autoSave();
+        }
+
+        function getCurrentMonthContribution() {
+            const contribution = parseFloat(document.getElementById('contribution').value) || 0;
+            const monthKey = getCurrentMonthKey();
+            const persons = monthsData[monthKey]?.persons || [];
+            return contribution * persons.length;
+        }
+
+        function getCurrentMonthExpenses() {
+            const monthKey = getCurrentMonthKey();
+            const expenses = monthsData[monthKey]?.expenses || [];
+            return expenses.reduce((sum, expense) => sum + expense.amount, 0);
+        }
+
+        function updatePersonsList() {
+            const container = document.getElementById('personsList');
+            container.innerHTML = '';
+            
+            const monthKey = getCurrentMonthKey();
+            const persons = monthsData[monthKey]?.persons || [];
+            const contribution = parseFloat(document.getElementById('contribution').value) || 0;
+            
+            console.log('Updating persons list:', persons); // للتشخيص
+            
+            persons.forEach((person, index) => {
+                const div = document.createElement('div');
+                div.className = 'person-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${person.name}</strong> - ${contribution.toFixed(3)} د.ك
+                        <div class="date-label">تاريخ الدفع: ${person.date}</div>
+                    </div>
+                    <button class="remove-btn" onclick="removePerson(${index})">حذف</button>
+                `;
+                container.appendChild(div);
+            });
+            
+            console.log('Persons list updated, count:', persons.length); // للتشخيص
+        }
+
+        function updateExpensesList() {
+            const container = document.getElementById('expensesList');
+            container.innerHTML = '';
+            
+            const monthKey = getCurrentMonthKey();
+            const expenses = monthsData[monthKey]?.expenses || [];
+            
+            expenses.forEach((expense, index) => {
+                const div = document.createElement('div');
+                div.className = 'expense-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${expense.name}</strong> - ${expense.amount.toFixed(3)} د.ك
+                        <div class="date-label">التاريخ: ${expense.date}</div>
+                    </div>
+                    <button class="remove-btn" onclick="removeExpense(${index})">حذف</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateSummary() {
+            const totalContribution = getCurrentMonthContribution();
+            const totalExpenses = getCurrentMonthExpenses();
+            const monthKey = getCurrentMonthKey();
+            const prevBalance = monthsData[monthKey]?.previousBalance || 0;
+            const remaining = totalContribution - totalExpenses + prevBalance;
+            
+            document.getElementById('totalContribution').textContent = totalContribution.toFixed(3) + ' د.ك';
+            document.getElementById('totalExpenses').textContent = totalExpenses.toFixed(3) + ' د.ك';
+            document.getElementById('remaining').textContent = remaining.toFixed(3) + ' د.ك';
+            document.getElementById('previousBalance').textContent = prevBalance.toFixed(3) + ' د.ك';
+            
+            // تغيير لون المتبقي حسب القيمة
+            const remainingElement = document.getElementById('remaining');
+            if (remaining < 0) {
+                remainingElement.style.color = '#ff6b6b';
+            } else if (remaining > 0) {
+                remainingElement.style.color = '#51cf66';
+            } else {
+                remainingElement.style.color = 'white';
+            }
+        }
+
+        function updateMonthsHistory() {
+            const container = document.getElementById('monthsHistory');
+            container.innerHTML = '';
+            
+            Object.keys(monthsData).forEach(monthKey => {
+                if (monthKey !== getCurrentMonthKey()) {
+                    const data = monthsData[monthKey];
+                    const totalContrib = data.persons.length * (parseFloat(document.getElementById('contribution').value) || 0);
+                    const totalExp = data.expenses.reduce((sum, exp) => sum + exp.amount, 0);
+                    const balance = totalContrib - totalExp + (data.previousBalance || 0);
+                    
+                    const monthDiv = document.createElement('div');
+                    monthDiv.innerHTML = `
+                        <button class="month-toggle" onclick="toggleMonth('${monthKey}')">
+                            ${data.monthName} - الباقي: ${balance.toFixed(3)} د.ك
+                        </button>
+                        <div class="month-details" id="month-${monthKey}">
+                            <h4>الأشخاص (${data.persons.length}):</h4>
+                            ${data.persons.map(p => `<p>• ${p.name} - ${p.date}</p>`).join('')}
+                            <h4>المصروفات:</h4>
+                            ${data.expenses.map(e => `<p>• ${e.name}: ${e.amount.toFixed(3)} د.ك - ${e.date}</p>`).join('')}
+                            <hr style="margin: 15px 0;">
+                            <p><strong>إجمالي القطية: ${totalContrib.toFixed(3)} د.ك</strong></p>
+                            <p><strong>إجمالي المصروفات: ${totalExp.toFixed(3)} د.ك</strong></p>
+                            <p><strong>الباقي من الشهر السابق: ${(data.previousBalance || 0).toFixed(3)} د.ك</strong></p>
+                            <p><strong>الباقي النهائي: ${balance.toFixed(3)} د.ك</strong></p>
+                        </div>
+                    `;
+                    container.appendChild(monthDiv);
+                }
+            });
+        }
+
+        function toggleMonth(monthKey) {
+            const details = document.getElementById(`month-${monthKey}`);
+            details.classList.toggle('active');
+        }
+
+        function updateDisplay() {
+            updatePersonsList();
+            updateExpensesList();
+            updateSummary();
+            updateMonthsHistory();
+        }
+
+        // تحديث القائمة عند تغيير مبلغ القطية
+        document.getElementById('contribution').addEventListener('input', () => {
+            updateDisplay();
+            autoSave();
+        });
+
+        // إضافة الشخص بالضغط على Enter
+        document.getElementById('personName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addPerson();
+            }
+        });
+
+        // إضافة المصروف بالضغط على Enter
+        document.getElementById('expenseAmount').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addExpense();
+            }
+        });
+
+        // تعيين التاريخ الحالي كافتراضي
+        document.getElementById('contributionDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+
+        // التحقق من انتقال الشهر كل دقيقة
+        setInterval(checkMonthTransition, 60000);
+
+        // تهيئة التطبيق
+        window.addEventListener('load', () => {
+            loadData();
+            initializeMonth();
+            updateDisplay();
+        });
+  </script>
+  <script>
+   if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js')
+    .then(() => console.log('✅ Service Worker Registered'))
+    .catch((err) => console.error('❌ SW registration failed:', err));
+}
+  </script>
+ </body>
+</html>
