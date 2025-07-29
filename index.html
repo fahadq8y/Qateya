@@ -456,8 +456,9 @@ function loadData() {
 }
 
 
-   let currentMonth = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
+   const today = new Date();
+let currentMonth = today.getMonth();
+        let currentYear = today.getFullYear();
         let monthsData = {};
         let previousMonthBalance = 0;
 
