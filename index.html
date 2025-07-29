@@ -522,52 +522,47 @@ function loadData() {
             }
         }
 
-        function addPerson() {
-            const nameInput = document.getElementById('personName');
-            const dateInput = document.getElementById('contributionDate');
-            const amountInput = document.getElementById('personAmount');
-            const name = nameInput.value.trim();
-            const amount = parseFloat(amountInput.value);
-            const date = dateInput.value;
-            
-            console.log('Adding person:', name, date); // للتشخيص
-            
-            if (name && date && amount > 0) {
-                const monthKey = getCurrentMonthKey();
-                console.log('Month key:', monthKey); // للتشخيص
-                console.log('Current monthsData:', monthsData); // للتشخيص
-                
-                // تأكد من وجود البيانات للشهر الحالي
-                if (!monthsData[monthKey]) {
-                    initializeMonth();
-                }
-                
-                if (!monthsData[monthKey].persons.find(p => p.name === name)) {
-                    const monthDate = new Date(date);
-                    const year = monthDate.getFullYear();
-                    const month = monthDate.getMonth();
-                    const personMonthKey = `${year}-${month}`;
-                    if (!monthsData[personMonthKey]) {
-                        monthsData[personMonthKey] = {
-                            persons: [], expenses: [], monthName: `${monthNames[month]} ${year}`, previousBalance: 0
-                        };
-                    }
-                    monthsData[personMonthKey].persons.push({ name, date, amount });
-                    nameInput.value = '';
-                    amountInput.value = '';
-                    dateInput.value = new Date().toISOString().split('T')[0];
-                    updateDisplay();
-                    autoSave();
-                    console.log('Person added successfully'); // للتشخيص
-                } else {
-                    alert('هذا الاسم موجود مسبقاً في هذا الشهر!');
-                }
-            } else {
-                alert('يرجى إدخال الاسم والتاريخ');
-            }
+        
+function addPerson() {
+    const nameInput = document.getElementById('personName');
+    const dateInput = document.getElementById('contributionDate');
+    const amountInput = document.getElementById('personAmount');
+    const name = nameInput.value.trim();
+    const date = dateInput.value;
+    const amount = parseFloat(amountInput.value);
+
+    if (name && date && amount > 0) {
+        const monthDate = new Date(date);
+        const year = monthDate.getFullYear();
+        const month = monthDate.getMonth();
+        const monthKey = `${year}-${month}`;
+
+        if (!monthsData[monthKey]) {
+            monthsData[monthKey] = {
+                persons: [],
+                expenses: [],
+                monthName: `${monthNames[month]} ${year}`,
+                previousBalance: 0
+            };
         }
 
-        function removePerson(index) {
+        if (!monthsData[monthKey].persons.find(p => p.name === name)) {
+            monthsData[monthKey].persons.push({ name, date, amount });
+            nameInput.value = '';
+            dateInput.value = new Date().toISOString().split('T')[0];
+            amountInput.value = '';
+            updateDisplay();
+            autoSave();
+        } else {
+            alert('هذا الاسم موجود مسبقاً في هذا الشهر!');
+        }
+    } else {
+        alert('يرجى إدخال الاسم والتاريخ والمبلغ بشكل صحيح');
+    }
+}
+
+
+function removePerson(index) {
             const monthKey = getCurrentMonthKey();
             monthsData[monthKey].persons.splice(index, 1);
             updateDisplay();
@@ -578,9 +573,7 @@ function loadData() {
             const nameInput = document.getElementById('expenseName');
             const amountInput = document.getElementById('expenseAmount');
             const dateInput = document.getElementById('expenseDate');
-            const amountInput = document.getElementById('personAmount');
             const name = nameInput.value.trim();
-            const amount = parseFloat(amountInput.value);
             const amount = parseFloat(amountInput.value);
             const date = dateInput.value;
             
@@ -588,7 +581,6 @@ function loadData() {
                 const monthKey = getCurrentMonthKey();
                 monthsData[monthKey].expenses.push({ name, amount, date });
                 nameInput.value = '';
-                    amountInput.value = '';
                 amountInput.value = '';
                 dateInput.value = new Date().toISOString().split('T')[0];
                 updateDisplay();
