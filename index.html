@@ -352,20 +352,6 @@
    </div>
    <div class="content">
     <!-- مبلغ القطية -->
-    <div class="section">
-     <h2>
-      <span class="icon">
-       💵
-      </span>
-      مبلغ القطية للشخص الواحد
-     </h2>
-     <div class="input-group">
-      <input id="contribution" min="0" placeholder="مثال: 50" step="0.01" type="number"/>
-      <span>
-       دينار
-      </span>
-     </div>
-    </div>
     <!-- إضافة الأشخاص -->
     <div class="section">
      <h2>
@@ -376,6 +362,7 @@
      </h2>
      <div class="input-group">
       <input id="personName" placeholder="اسم الشخص" type="text"/>
+      <input id="personAmount" min="0" placeholder="مبلغ القطية" step="0.01" type="number"/>
       <input id="contributionDate" type="date"/>
       <button onclick="addPerson()">
        إضافة
@@ -457,18 +444,6 @@
    </div>
   </div>
   <script>
-   function autoSave() {
-    localStorage.setItem('qatyaData', JSON.stringify(monthsData));
-}
-
-function loadData() {
-    const saved = localStorage.getItem('qatyaData');
-    if (saved) {
-        monthsData = JSON.parse(saved);
-    }
-}
-
-
    let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
         let monthsData = {};
@@ -538,12 +513,14 @@ function loadData() {
         function addPerson() {
             const nameInput = document.getElementById('personName');
             const dateInput = document.getElementById('contributionDate');
+            const amountInput = document.getElementById('personAmount');
             const name = nameInput.value.trim();
+            const amount = parseFloat(amountInput.value);
             const date = dateInput.value;
             
             console.log('Adding person:', name, date); // للتشخيص
             
-            if (name && date) {
+            if (name && date && amount > 0) {
                 const monthKey = getCurrentMonthKey();
                 console.log('Month key:', monthKey); // للتشخيص
                 console.log('Current monthsData:', monthsData); // للتشخيص
@@ -554,8 +531,18 @@ function loadData() {
                 }
                 
                 if (!monthsData[monthKey].persons.find(p => p.name === name)) {
-                    monthsData[monthKey].persons.push({ name, date });
+                    const monthDate = new Date(date);
+                    const year = monthDate.getFullYear();
+                    const month = monthDate.getMonth();
+                    const personMonthKey = `${year}-${month}`;
+                    if (!monthsData[personMonthKey]) {
+                        monthsData[personMonthKey] = {
+                            persons: [], expenses: [], monthName: `${monthNames[month]} ${year}`, previousBalance: 0
+                        };
+                    }
+                    monthsData[personMonthKey].persons.push({ name, date, amount });
                     nameInput.value = '';
+                    amountInput.value = '';
                     dateInput.value = new Date().toISOString().split('T')[0];
                     updateDisplay();
                     autoSave();
@@ -579,7 +566,9 @@ function loadData() {
             const nameInput = document.getElementById('expenseName');
             const amountInput = document.getElementById('expenseAmount');
             const dateInput = document.getElementById('expenseDate');
+            const amountInput = document.getElementById('personAmount');
             const name = nameInput.value.trim();
+            const amount = parseFloat(amountInput.value);
             const amount = parseFloat(amountInput.value);
             const date = dateInput.value;
             
@@ -587,6 +576,7 @@ function loadData() {
                 const monthKey = getCurrentMonthKey();
                 monthsData[monthKey].expenses.push({ name, amount, date });
                 nameInput.value = '';
+                    amountInput.value = '';
                 amountInput.value = '';
                 dateInput.value = new Date().toISOString().split('T')[0];
                 updateDisplay();
