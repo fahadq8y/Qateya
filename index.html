@@ -457,6 +457,18 @@
    </div>
   </div>
   <script>
+   function autoSave() {
+    localStorage.setItem('qatyaData', JSON.stringify(monthsData));
+}
+
+function loadData() {
+    const saved = localStorage.getItem('qatyaData');
+    if (saved) {
+        monthsData = JSON.parse(saved);
+    }
+}
+
+
    let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
         let monthsData = {};

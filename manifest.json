@@ -8,12 +8,12 @@
   "description": "تطبيق حاسبة القطية الشهرية",
   "icons": [
     {
-      "src": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/354/money-bag_1f4b0.png",
+      "src": "icon_192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/354/money-bag_1f4b0.png",
+      "src": "icon_512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
