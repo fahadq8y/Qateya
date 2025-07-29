@@ -361,8 +361,8 @@
       الأشخاص ومساهماتهم
      </h2>
      <div class="input-group">
-      <input id="personName" placeholder="اسم الشخص" type="text"/>
       <input id="personAmount" min="0" placeholder="مبلغ القطية" step="0.01" type="number"/>
+      <input id="personName" placeholder="اسم الشخص" type="text"/>
       <input id="contributionDate" type="date"/>
       <button onclick="addPerson()">
        إضافة
@@ -610,33 +610,29 @@ function removePerson(index) {
             return expenses.reduce((sum, expense) => sum + expense.amount, 0);
         }
 
-        function updatePersonsList() {
-            const container = document.getElementById('personsList');
-            container.innerHTML = '';
-            
-            const monthKey = getCurrentMonthKey();
-            const persons = monthsData[monthKey]?.persons || [];
-            const contribution = parseFloat(document.getElementById('contribution').value) || 0;
-            
-            console.log('Updating persons list:', persons); // للتشخيص
-            
-            persons.forEach((person, index) => {
-                const div = document.createElement('div');
-                div.className = 'person-item';
-                div.innerHTML = `
-                    <div>
-                        <strong>${person.name}</strong> - ${contribution.toFixed(3)} د.ك
-                        <div class="date-label">تاريخ الدفع: ${person.date}</div>
-                    </div>
-                    <button class="remove-btn" onclick="removePerson(${index})">حذف</button>
-                `;
-                container.appendChild(div);
-            });
-            
-            console.log('Persons list updated, count:', persons.length); // للتشخيص
-        }
+        
+function updatePersonsList() {
+    const container = document.getElementById('personsList');
+    container.innerHTML = '';
 
-        function updateExpensesList() {
+    const monthKey = getCurrentMonthKey();
+    const persons = monthsData[monthKey]?.persons || [];
+
+    persons.forEach((person, index) => {
+        const div = document.createElement('div');
+        div.className = 'person-item';
+        div.innerHTML = `
+            <div>
+                <strong>${person.name}</strong> - ${person.amount.toFixed(3)} د.ك
+                <div class="date-label">تاريخ الدفع: ${person.date}</div>
+            </div>
+            <button class="remove-btn" onclick="removePerson(${index})">حذف</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function updateExpensesList() {
             const container = document.getElementById('expensesList');
             container.innerHTML = '';
             
