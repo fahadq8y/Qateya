@@ -429,6 +429,9 @@
        </div>
       </div>
      </div>
+     <button id="downloadPdfBtn" onclick="generatePDF()">
+      📄 تحميل تقرير PDF
+     </button>
     </div>
     <!-- سجل الأشهر السابقة -->
     <div class="history-section">
@@ -471,23 +474,22 @@ let currentMonth = today.getMonth();
             return `${currentYear}-${currentMonth}`;
         }
 
-        function initializeMonth() {
-            const monthKey = getCurrentMonthKey();
-            console.log('Initializing month:', monthKey); // للتشخيص
-            
-            if (!monthsData[monthKey]) {
-                monthsData[monthKey] = {
-                    persons: [],
-                    expenses: [],
-                    monthName: `${monthNames[currentMonth]} ${currentYear}`,
-                    previousBalance: previousMonthBalance
-                };
-                console.log('Month initialized:', monthsData[monthKey]); // للتشخيص
-            }
-            updateCurrentMonthDisplay();
-        }
+        
+function initializeMonth() {
+    const monthKey = getCurrentMonthKey();
+    if (!monthsData[monthKey]) {
+        monthsData[monthKey] = {
+            persons: [],
+            expenses: [],
+            monthName: `${monthNames[currentMonth]} ${currentYear}`,
+            previousBalance: previousMonthBalance
+        };
+    }
+    updateCurrentMonthDisplay();
+}
 
-        function updateCurrentMonthDisplay() {
+
+function updateCurrentMonthDisplay() {
             document.getElementById('currentMonthDisplay').textContent = 
                 `الشهر الحالي: ${monthNames[currentMonth]} ${currentYear}`;
         }
@@ -765,6 +767,21 @@ function toggleMonth(monthKey) {
   navigator.serviceWorker.register('./service-worker.js')
     .then(() => console.log('✅ Service Worker Registered'))
     .catch((err) => console.error('❌ SW registration failed:', err));
+}
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js">
+  </script>
+  <script>
+   function generatePDF() {
+    const element = document.querySelector('.container');
+    const opt = {
+        margin:       0.5,
+        filename:     'qatya-report.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().from(element).set(opt).save();
 }
   </script>
  </body>
