@@ -597,14 +597,15 @@ function removePerson(index) {
             autoSave();
         }
 
-        function getCurrentMonthContribution() {
-            const contribution = parseFloat(document.getElementById('contribution').value) || 0;
-            const monthKey = getCurrentMonthKey();
-            const persons = monthsData[monthKey]?.persons || [];
-            return contribution * persons.length;
-        }
+        
+function getCurrentMonthContribution() {
+    const monthKey = getCurrentMonthKey();
+    const persons = monthsData[monthKey]?.persons || [];
+    return persons.reduce((sum, p) => sum + (p.amount || 0), 0);
+}
 
-        function getCurrentMonthExpenses() {
+
+function getCurrentMonthExpenses() {
             const monthKey = getCurrentMonthKey();
             const expenses = monthsData[monthKey]?.expenses || [];
             return expenses.reduce((sum, expense) => sum + expense.amount, 0);
