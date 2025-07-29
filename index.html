@@ -348,7 +348,7 @@
     </p>
    </div>
    <div class="current-month" id="currentMonthDisplay">
-    الشهر الحالي: يناير 2025
+    نحن في شهر: يناير 2025
    </div>
    <div class="content">
     <!-- مبلغ القطية -->
@@ -677,40 +677,43 @@ function updateExpensesList() {
             }
         }
 
-        function updateMonthsHistory() {
-            const container = document.getElementById('monthsHistory');
-            container.innerHTML = '';
-            
-            Object.keys(monthsData).forEach(monthKey => {
-                if (monthKey !== getCurrentMonthKey()) {
-                    const data = monthsData[monthKey];
-                    const totalContrib = data.persons.length * (parseFloat(document.getElementById('contribution').value) || 0);
-                    const totalExp = data.expenses.reduce((sum, exp) => sum + exp.amount, 0);
-                    const balance = totalContrib - totalExp + (data.previousBalance || 0);
-                    
-                    const monthDiv = document.createElement('div');
-                    monthDiv.innerHTML = `
-                        <button class="month-toggle" onclick="toggleMonth('${monthKey}')">
-                            ${data.monthName} - الباقي: ${balance.toFixed(3)} د.ك
-                        </button>
-                        <div class="month-details" id="month-${monthKey}">
-                            <h4>الأشخاص (${data.persons.length}):</h4>
-                            ${data.persons.map(p => `<p>• ${p.name} - ${p.date}</p>`).join('')}
-                            <h4>المصروفات:</h4>
-                            ${data.expenses.map(e => `<p>• ${e.name}: ${e.amount.toFixed(3)} د.ك - ${e.date}</p>`).join('')}
-                            <hr style="margin: 15px 0;">
-                            <p><strong>إجمالي القطية: ${totalContrib.toFixed(3)} د.ك</strong></p>
-                            <p><strong>إجمالي المصروفات: ${totalExp.toFixed(3)} د.ك</strong></p>
-                            <p><strong>الباقي من الشهر السابق: ${(data.previousBalance || 0).toFixed(3)} د.ك</strong></p>
-                            <p><strong>الباقي النهائي: ${balance.toFixed(3)} د.ك</strong></p>
-                        </div>
-                    `;
-                    container.appendChild(monthDiv);
-                }
-            });
-        }
+        
+function updateMonthsHistory() {
+    const container = document.getElementById('monthsHistory');
+    container.innerHTML = '';
 
-        function toggleMonth(monthKey) {
+    Object.keys(monthsData).forEach(monthKey => {
+        if (monthKey !== getCurrentMonthKey()) {
+            const data = monthsData[monthKey];
+            const totalContrib = data.persons.reduce((sum, p) => sum + (p.amount || 0), 0);
+            const totalExp = data.expenses.reduce((sum, exp) => sum + exp.amount, 0);
+            const balance = totalContrib - totalExp + (data.previousBalance || 0);
+
+            const monthDiv = document.createElement('div');
+            monthDiv.innerHTML = `
+                <button class="month-toggle" onclick="toggleMonth('${monthKey}')">
+                    ${data.monthName} - الباقي: ${balance.toFixed(3)} د.ك
+                </button>
+                <div class="month-details" id="month-${monthKey}">
+                    <h4>📥 القطيات:</h4>
+                    ${data.persons.length ? data.persons.map(p => `<p>• ${p.name}: ${p.amount.toFixed(3)} د.ك - ${p.date}</p>`).join('') : '<p>لا توجد قطيات</p>'}
+
+                    <h4>🧾 المصروفات:</h4>
+                    ${data.expenses.length ? data.expenses.map(e => `<p>• ${e.name}: ${e.amount.toFixed(3)} د.ك - ${e.date}</p>`).join('') : '<p>لا توجد مصروفات</p>'}
+
+                    <hr style="margin: 15px 0;">
+                    <p><strong>إجمالي القطية: ${totalContrib.toFixed(3)} د.ك</strong></p>
+                    <p><strong>إجمالي المصروفات: ${totalExp.toFixed(3)} د.ك</strong></p>
+                    <p><strong>الباقي من الشهر السابق: ${(data.previousBalance || 0).toFixed(3)} د.ك</strong></p>
+                    <p><strong>الباقي النهائي: ${balance.toFixed(3)} د.ك</strong></p>
+                </div>
+            `;
+            container.appendChild(monthDiv);
+        }
+    });
+}
+
+function toggleMonth(monthKey) {
             const details = document.getElementById(`month-${monthKey}`);
             details.classList.toggle('active');
         }
